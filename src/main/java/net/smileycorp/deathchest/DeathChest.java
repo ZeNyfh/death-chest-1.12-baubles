@@ -2,10 +2,12 @@ package net.smileycorp.deathchest;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -29,6 +31,9 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.lwjgl.Sys;
 
 
 @EventBusSubscriber
@@ -39,7 +44,7 @@ public class DeathChest {
 	public static boolean lockChest;
 	public static boolean giveJournal;
 	public static boolean journalPos;
-	
+	public static final Logger LOGGER = LogManager.getLogger("deathchest");
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
 		Config.config = new Configuration(event.getSuggestedConfigurationFile());
@@ -64,7 +69,11 @@ public class DeathChest {
 			IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
 			if (baubles != null) {
 				for (int i = 0; i < baubles.getSlots(); i++) {
-					addStack(baubles.getStackInSlot(i), items, items2, 27);
+					ItemStack slotItem = baubles.getStackInSlot(i);
+					if (slotItem.getItem() == Item.getByNameOrId("wearablebackpacks:backpack")) {
+						continue;
+					}
+					addStack(slotItem, items, items2, 27);
 					baubles.setStackInSlot(i, ItemStack.EMPTY); // ensure baubles are actually removed.
 				}
 			}
