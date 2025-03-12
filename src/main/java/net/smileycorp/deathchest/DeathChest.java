@@ -27,6 +27,9 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import baubles.api.BaublesApi;
+import baubles.api.cap.IBaublesItemHandler;
+
 
 @EventBusSubscriber
 @Mod(modid = "deathchest", acceptableRemoteVersions="*", version = "1.5")
@@ -58,6 +61,13 @@ public class DeathChest {
 				addStack(stack, items, items2, 27);
 			}
 			addStack(inventory.offHandInventory.get(0), items, items2, 27);
+			IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+			if (baubles != null) {
+				for (int i = 0; i < baubles.getSlots(); i++) {
+					addStack(baubles.getStackInSlot(i), items, items2, 27);
+					baubles.setStackInSlot(i, ItemStack.EMPTY); // ensure baubles are actually removed.
+				}
+			}
 			if (items.size()>0) {
 				for (double i = player.getPosition().getY(); i < 255; i++) {
 					BlockPos pos = new BlockPos(player.getPosition().getX(), i, player.getPosition().getZ());
